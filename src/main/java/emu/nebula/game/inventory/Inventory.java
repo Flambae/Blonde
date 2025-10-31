@@ -41,6 +41,10 @@ public class Inventory extends PlayerManager {
     
     //
     
+    public PlayerChangeInfo addItem(int id, int count) {
+        return this.addItem(id, count, null);
+    }
+    
     public synchronized PlayerChangeInfo addItem(int id, int count, PlayerChangeInfo changes) {
         // Changes
         if (changes == null) {
@@ -208,6 +212,10 @@ public class Inventory extends PlayerManager {
         }
         
         return changes;
+    }
+    
+    public PlayerChangeInfo removeItem(int id, int count) {
+        return this.removeItem(id, count, null);
     }
     
     public synchronized PlayerChangeInfo removeItem(int id, int count, PlayerChangeInfo changes) {

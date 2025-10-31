@@ -23,6 +23,8 @@ public class GameData {
     @Getter private static DataTable<CharacterSkillUpgradeDef> CharacterSkillUpgradeDataTable = new DataTable<>();
     @Getter private static DataTable<CharacterUpgradeDef> CharacterUpgradeDataTable = new DataTable<>();
     @Getter private static DataTable<CharItemExpDef> CharItemExpDataTable = new DataTable<>();
+    @Getter private static DataTable<TalentGroupDef> TalentGroupDataTable = new DataTable<>();
+    @Getter private static DataTable<TalentDef> TalentDataTable = new DataTable<>();
     
     @Getter private static DataTable<DiscDef> DiscDataTable = new DataTable<>();
     @Getter private static DataTable<DiscStrengthenDef> DiscStrengthenDataTable = new DataTable<>();

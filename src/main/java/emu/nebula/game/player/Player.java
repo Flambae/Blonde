@@ -479,8 +479,8 @@ public class Player implements GameDatabaseObject {
         this.getInstanceManager().toProto(proto);
         
         // Handbook
-        proto.addHandbook(this.getCharacters().getCharacterHandbook().toProto());
-        proto.addHandbook(this.getCharacters().getDiscHandbook().toProto());
+        proto.addHandbook(this.getCharacters().getCharacterHandbook());
+        proto.addHandbook(this.getCharacters().getDiscHandbook());
         
         // Extra
         proto.getMutableVampireSurvivorRecord()

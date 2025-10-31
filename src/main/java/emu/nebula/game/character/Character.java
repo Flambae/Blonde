@@ -1,15 +1,18 @@
 package emu.nebula.game.character;
 
+import org.bson.Document;
+import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 
 import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Id;
 import dev.morphia.annotations.Indexed;
-
+import dev.morphia.annotations.PreLoad;
 import emu.nebula.GameConstants;
 import emu.nebula.Nebula;
 import emu.nebula.data.GameData;
 import emu.nebula.data.resources.CharacterDef;
+import emu.nebula.data.resources.TalentGroupDef;
 import emu.nebula.database.GameDatabaseObject;
 import emu.nebula.game.inventory.ItemParamMap;
 import emu.nebula.game.player.Player;
@@ -19,7 +22,8 @@ import emu.nebula.proto.Public.CharGemPreset;
 import emu.nebula.proto.Public.CharGemSlot;
 import emu.nebula.proto.PublicStarTower.StarTowerChar;
 import emu.nebula.proto.PublicStarTower.StarTowerCharGem;
-
+import emu.nebula.util.Bitset;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import lombok.Getter;
 
 @Getter
@@ -39,7 +43,7 @@ public class Character implements GameDatabaseObject {
     private int exp;
     private int skin;
     private int[] skills;
-    private byte[] talents;
+    private Bitset talents;
     
     private long createTime;
     
@@ -60,7 +64,7 @@ public class Character implements GameDatabaseObject {
         this.level = 1;
         this.skin = data.getDefaultSkinId();
         this.skills = new int[] {1, 1, 1, 1, 1};
-        this.talents = new byte[8];
+        this.talents = new Bitset();
         this.createTime = Nebula.getCurrentTime();
     }
     
@@ -228,6 +232,63 @@ public class Character implements GameDatabaseObject {
         return changes.setSuccess(true);
     }
     
+    public PlayerChangeInfo unlockTalent(TalentGroupDef talentGroup) {
+        // Get talent item
+        int talentItemId = this.getData().getFragmentsId();
+        int talentItemCount = this.getPlayer().getInventory().getItemCount(talentItemId);
+        int unlockCount = (int) Math.floor(talentItemCount / 6); // Max unlock count
+        
+        // Sanity check
+        if (unlockCount <= 0) {
+            return null;
+        }
+        
+        // Amount of talents unlocked
+        int amount = 0;
+        var nodes = new IntArrayList();
+        
+        // Unlock talents
+        for (var talent : talentGroup.getTalents()) {
+            // Skip unlocked talents
+            if (this.getTalents().isSet(talent.getIndex())) {
+                continue;
+            }
+            
+            // Set bit
+            this.getTalents().setBit(talent.getIndex());
+            
+            // Add nodes
+            nodes.add(talent.getId());
+            amount++;
+            
+            // Set last talent if we unlocked everything
+            if (talent.getSort() == 10) {
+                this.getTalents().setBit(talentGroup.getMainTalent().getIndex());
+                nodes.add(talentGroup.getMainTalent().getId());
+            }
+            
+            // End
+            if (amount >= unlockCount) {
+                break;
+            }
+        }
+        
+        // Skip if we didn't unlock anything
+        if (nodes.size() <= 0) {
+            return null;
+        }
+        
+        // Remove items
+        var changes = getPlayer().getInventory().removeItem(talentItemId, amount * 6);
+        changes.setExtraData(nodes);
+        
+        // Save to database
+        this.save();
+        
+        // Success
+        return changes.setSuccess(true);
+    }
+    
     // Proto
     
     public Char toProto() {
@@ -236,7 +297,7 @@ public class Character implements GameDatabaseObject {
                 .setLevel(this.getLevel())
                 .setSkin(this.getSkin())
                 .setAdvance(this.getAdvance())
-                .setTalentNodes(this.getTalents())
+                .setTalentNodes(this.getTalents().toByteArray())
                 .addAllSkillLvs(this.getSkills())
                 .setCreateTime(this.getCreateTime());
         
@@ -267,7 +328,7 @@ public class Character implements GameDatabaseObject {
                 .setId(this.getCharId())
                 .setAdvance(this.getAdvance())
                 .setLevel(this.getLevel())
-                .setTalentNodes(this.getTalents())
+                .setTalentNodes(this.getTalents().toByteArray())
                 .addAllSkillLvs(this.getSkills());
         
         for (int i = 1; i <= 3; i++) {
@@ -279,5 +340,16 @@ public class Character implements GameDatabaseObject {
         }
         
         return proto;
+    }
+    
+    // Database fix
+    
+    @PreLoad
+    public void onLoad(Document doc) {
+        var talents = doc.get("talents");
+        if (talents != null && talents.getClass() == Binary.class) {
+            doc.remove("talents");
+            this.talents = new Bitset();
+        }
     }
 }

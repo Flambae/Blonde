@@ -1,18 +1,31 @@
-package emu.nebula.game.player;
+package emu.nebula.util;
 
-import emu.nebula.proto.Public.HandbookInfo;
 import lombok.Getter;
 
 @Getter
-public class PlayerHandbook {
-    private int type;
+public class Bitset {
     private long[] data;
     
-    public PlayerHandbook(int type) {
-        this.type = type;
+    public Bitset() {
         this.data = new long[1];
     }
     
+    public Bitset(long[] longArray) {
+        this.data = longArray;
+    }
+    
+    public boolean isSet(int index) {
+        int longArrayOffset = (int) Math.floor((index - 1) / 64D);
+        int bytePosition = ((index - 1) % 64);
+        
+        if (longArrayOffset >= this.data.length) {
+            return false;
+        }
+        
+        long flag = 1L << bytePosition;
+        return (this.data[longArrayOffset] & flag) == flag;
+    }
+
     public void setBit(int index) {
         int longArrayOffset = (int) Math.floor((index - 1) / 64D);
         int bytePosition = ((index - 1) % 64);
@@ -39,15 +52,5 @@ public class PlayerHandbook {
         }
         
         return array;
-    }
-    
-    // Proto
-    
-    public HandbookInfo toProto() {
-        var proto = HandbookInfo.newInstance()
-                .setType(this.getType())
-                .setData(this.toByteArray());
-        
-        return proto;
     }
 }

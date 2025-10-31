@@ -9,12 +9,13 @@ import lombok.Getter;
 public class CharacterDef extends BaseDef {
     private int Id;
     private String Name;
-    
     private boolean Available;
     private int Grade;
     private int DefaultSkinId;
     private int AdvanceSkinId;
     private int AdvanceGroup;
+    private int FragmentsId;
+    private int TransformQty;
     private int[] SkillsUpgradeGroup;
     
     @Override

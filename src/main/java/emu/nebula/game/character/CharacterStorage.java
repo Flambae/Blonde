@@ -7,8 +7,9 @@ import emu.nebula.data.GameData;
 import emu.nebula.data.resources.CharacterDef;
 import emu.nebula.data.resources.DiscDef;
 import emu.nebula.game.player.PlayerManager;
+import emu.nebula.proto.Public.HandbookInfo;
+import emu.nebula.util.Bitset;
 import emu.nebula.game.player.Player;
-import emu.nebula.game.player.PlayerHandbook;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
@@ -69,8 +70,8 @@ public class CharacterStorage extends PlayerManager {
         return this.getCharacters().values();
     }
     
-    public PlayerHandbook getCharacterHandbook() {
-        var handbook = new PlayerHandbook(1);
+    public HandbookInfo getCharacterHandbook() {
+        var bitset = new Bitset();
         
         for (var character : this.getCharacterCollection()) {
             // Get handbook
@@ -78,8 +79,12 @@ public class CharacterStorage extends PlayerManager {
             if (data == null) continue;
             
             // Set flag
-            handbook.setBit(data.getIndex());
+            bitset.setBit(data.getIndex());
         }
+        
+        var handbook = HandbookInfo.newInstance()
+                .setType(1)
+                .setData(bitset.toByteArray());
         
         return handbook;
     }
@@ -128,8 +133,8 @@ public class CharacterStorage extends PlayerManager {
         return this.getDiscs().values();
     }
     
-    public PlayerHandbook getDiscHandbook() {
-        var handbook = new PlayerHandbook(2);
+    public HandbookInfo getDiscHandbook() {
+        var bitset = new Bitset();
         
         for (var disc : this.getDiscCollection()) {
             // Get handbook
@@ -137,8 +142,12 @@ public class CharacterStorage extends PlayerManager {
             if (data == null) continue;
             
             // Set flag
-            handbook.setBit(data.getIndex());
+            bitset.setBit(data.getIndex());
         }
+        
+        var handbook = HandbookInfo.newInstance()
+                .setType(2)
+                .setData(bitset.toByteArray());
         
         return handbook;
     }
