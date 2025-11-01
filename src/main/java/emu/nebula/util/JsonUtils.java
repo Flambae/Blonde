@@ -77,6 +77,10 @@ public class JsonUtils {
             return null;
         }
     }
+    
+    public static <T1, T2> Map<T1, T2> decodeMap(String jsonData, Class<T1> keyType, Class<T2> valueType) {
+        return gson.fromJson(jsonData, TypeToken.getParameterized(LinkedHashMap.class, keyType, valueType).getType());
+    }
 
     public static <T> T loadToClass(InputStreamReader fileReader, Class<T> classType) throws IOException {
         return gson.fromJson(fileReader, classType);

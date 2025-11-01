@@ -39,27 +39,27 @@ public class Inventory extends PlayerManager {
         return item != null ? item.getCount() : 0;
     }
     
-    //
+    // Add/Remove items
     
     public PlayerChangeInfo addItem(int id, int count) {
         return this.addItem(id, count, null);
     }
     
-    public synchronized PlayerChangeInfo addItem(int id, int count, PlayerChangeInfo changes) {
+    public synchronized PlayerChangeInfo addItem(int id, int count, PlayerChangeInfo change) {
         // Changes
-        if (changes == null) {
-            changes = new PlayerChangeInfo();
+        if (change == null) {
+            change = new PlayerChangeInfo();
         }
         
         // Sanity
         if (count == 0) {
-            return changes;
+            return change;
         }
         
         // Get game data
         var data = GameData.getItemDataTable().get(id);
         if (data == null) {
-            return changes;
+            return change;
         }
         
         // Set amount
@@ -98,11 +98,11 @@ public class Inventory extends PlayerManager {
                 }
                 
                 if (diff != 0) {
-                    var change = Res.newInstance()
+                    var proto = Res.newInstance()
                             .setTid(id)
                             .setQty(diff);
                     
-                    changes.add(change);
+                    change.add(proto);
                 }
             }
             case Item -> {
@@ -136,11 +136,11 @@ public class Inventory extends PlayerManager {
                 }
                 
                 if (diff != 0) {
-                    var change = Item.newInstance()
+                    var proto = Item.newInstance()
                             .setTid(id)
                             .setQty(diff);
                     
-                    changes.add(change);
+                    change.add(proto);
                 }
             }
             case Disc -> {
@@ -151,7 +151,7 @@ public class Inventory extends PlayerManager {
                 var disc = getPlayer().getCharacters().addDisc(id);
                 
                 if (disc != null) {
-                    changes.add(disc.toProto());
+                    change.add(disc.toProto());
                 }
             }
             case Char -> {
@@ -162,11 +162,14 @@ public class Inventory extends PlayerManager {
                 var character = getPlayer().getCharacters().addCharacter(id);
 
                 if (character != null) {
-                    changes.add(character.toProto());
+                    change.add(character.toProto());
                 }
             }
+            case Energy -> {
+                this.getPlayer().addEnergy(amount, change);
+            }
             case WorldRankExp -> {
-                this.getPlayer().addExp(amount, changes);
+                this.getPlayer().addExp(amount, change);
             }
             default -> {
                 // Not implemented
@@ -174,79 +177,79 @@ public class Inventory extends PlayerManager {
         }
         
         //
-        return changes;
+        return change;
     }
 
     @Deprecated
-    public synchronized PlayerChangeInfo addItems(List<ItemParam> params, PlayerChangeInfo changes) {
+    public synchronized PlayerChangeInfo addItems(List<ItemParam> params, PlayerChangeInfo change) {
         // Changes
-        if (changes == null) {
-            changes = new PlayerChangeInfo();
+        if (change == null) {
+            change = new PlayerChangeInfo();
         }
         
         for (ItemParam param : params) {
-            this.addItem(param.getId(), param.getCount(), changes);
+            this.addItem(param.getId(), param.getCount(), change);
         }
         
-        return changes;
+        return change;
     }
     
     public synchronized PlayerChangeInfo addItems(ItemParamMap params) {
         return this.addItems(params, null);
     }
     
-    public synchronized PlayerChangeInfo addItems(ItemParamMap params, PlayerChangeInfo changes) {
+    public synchronized PlayerChangeInfo addItems(ItemParamMap params, PlayerChangeInfo change) {
         // Changes
-        if (changes == null) {
-            changes = new PlayerChangeInfo();
+        if (change == null) {
+            change = new PlayerChangeInfo();
         }
         
         // Sanity
         if (params == null || params.isEmpty()) {
-            return changes;
+            return change;
         }
         
         // Add items
         for (var param : params.entries()) {
-            this.addItem(param.getIntKey(), param.getIntValue(), changes);
+            this.addItem(param.getIntKey(), param.getIntValue(), change);
         }
         
-        return changes;
+        return change;
     }
     
     public PlayerChangeInfo removeItem(int id, int count) {
         return this.removeItem(id, count, null);
     }
     
-    public synchronized PlayerChangeInfo removeItem(int id, int count, PlayerChangeInfo changes) {
+    public synchronized PlayerChangeInfo removeItem(int id, int count, PlayerChangeInfo change) {
         if (count > 0) {
             count = -count;
         }
         
-        return this.addItem(id, count, changes);
+        return this.addItem(id, count, change);
     }
     
     public synchronized PlayerChangeInfo removeItems(ItemParamMap params) {
         return this.removeItems(params, null);
     }
     
-    public synchronized PlayerChangeInfo removeItems(ItemParamMap params, PlayerChangeInfo changes) {
+    public synchronized PlayerChangeInfo removeItems(ItemParamMap params, PlayerChangeInfo change) {
         // Changes
-        if (changes == null) {
-            changes = new PlayerChangeInfo();
+        if (change == null) {
+            change = new PlayerChangeInfo();
         }
         
         // Sanity
         if (params == null || params.isEmpty()) {
-            return changes;
+            return change;
         }
         
         // Remove items
         for (var param : params.entries()) {
-            this.removeItem(param.getIntKey(), param.getIntValue(), changes);
+            this.removeItem(param.getIntKey(), param.getIntValue(), change);
         }
         
-        return changes;
+        return change;
     }
     
     /**
@@ -322,16 +325,58 @@ public class Inventory extends PlayerManager {
         }
         
         // Create change info
-        var changes = new PlayerChangeInfo();
+        var change = new PlayerChangeInfo();
         
         // Remove items
-        this.removeItems(materials, changes);
+        this.removeItems(materials, change);
         
         // Add produced items
-        this.addItem(data.getProductionId(), data.getProductionPerBatch() * num, changes);
+        this.addItem(data.getProductionId(), data.getProductionPerBatch() * num, change);
         
         // Success
-        return changes.setSuccess(true);
+        return change.setSuccess(true);
+    }
+    
+    public PlayerChangeInfo useItem(int id, int count, PlayerChangeInfo change) {
+        // Changes
+        if (change == null) {
+            change = new PlayerChangeInfo();
+        }
+        
+        // Get item data
+        var data = GameData.getItemDataTable().get(id);
+        if (data == null || data.getUseParams() == null) {
+            return change;
+        }
+        
+        // Make sure we have this item
+        if (!this.verifyItem(id, count)) {
+            return change;
+        }
+        
+        // Success
+        boolean success = false;
+        
+        // Apply use
+        switch (data.getUseAction()) {
+            case 2 -> {
+                // Add items
+                this.addItems(data.getUseParams(), change);
+                // Success
+                success = true;
+            }
+            default -> {
+                // Not implemented
+            }
+        }
+
+        // Consume item if successful
+        if (success) {
+            this.removeItem(id, count, change);
+        }
+        
+        // Success
+        return change;
     }
     
     // Database

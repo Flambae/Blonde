@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import emu.nebula.proto.Public.Item;
 import emu.nebula.proto.Public.ItemInfo;
 import emu.nebula.proto.Public.ItemTpl;
-
+import emu.nebula.util.JsonUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
 
 import us.hebi.quickbuf.RepeatedMessage;
@@ -108,6 +108,17 @@ public class ItemParamMap extends Int2IntLinkedOpenHashMap {
         
         for (var template : items) {
             map.add(template.getId(), template.getCount());
+        }
+        
+        return map;
+    }
+
+    public static ItemParamMap fromJsonString(String jsonString) {
+        var map = new ItemParamMap();
+        var json = JsonUtils.decodeMap(jsonString, Integer.class, Integer.class);
+        
+        for (var entry : json.entrySet()) {
+            map.add(entry.getKey(), entry.getValue());
         }
         
         return map;

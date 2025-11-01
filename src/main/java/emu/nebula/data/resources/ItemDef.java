@@ -2,6 +2,7 @@ package emu.nebula.data.resources;
 
 import emu.nebula.data.BaseDef;
 import emu.nebula.data.ResourceType;
+import emu.nebula.game.inventory.ItemParamMap;
 import emu.nebula.game.inventory.ItemSubType;
 import emu.nebula.game.inventory.ItemType;
 import lombok.Getter;
@@ -16,6 +17,11 @@ public class ItemDef extends BaseDef {
     private int Rarity;
     private boolean Stack;
     
+    private int UseMode;
+    private int UseAction;
+    private String UseArgs;
+    
+    private transient ItemParamMap useParams;
     private transient ItemType itemType;
     private transient ItemSubType itemSubType;
     
@@ -28,5 +34,9 @@ public class ItemDef extends BaseDef {
     public void onLoad() {
         this.itemType = ItemType.getByValue(this.Type);
         this.itemSubType = ItemSubType.getByValue(this.Stype);
+        
+        if (this.UseArgs != null) {
+            this.useParams = ItemParamMap.fromJsonString(this.UseArgs);
+        }
     }
 }
