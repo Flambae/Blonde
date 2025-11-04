@@ -65,12 +65,12 @@ public class GameContext {
         while (it.hasNext()) {
             var session = it.next().getValue();
             
-            if (timeout > session.getLastActiveTime()) {
+            if (timeout > session.getLastActiveTime() || session.isRemove()) {
                 // Remove from session map
                 it.remove();
                 
                 // Clear player
-                session.clearPlayer(this);
+                session.clearPlayer();
             }
         }
     }

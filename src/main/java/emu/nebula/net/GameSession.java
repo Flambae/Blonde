@@ -7,7 +7,6 @@ import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 
 import emu.nebula.Nebula;
-import emu.nebula.game.GameContext;
 import emu.nebula.game.account.Account;
 import emu.nebula.game.account.AccountHelper;
 import emu.nebula.game.player.Player;
@@ -32,19 +31,24 @@ public class GameSession {
     private byte[] serverPrivateKey;
     private byte[] key;
     
-    //
+    // Session cleanup
+    private boolean remove;
     private long lastActiveTime;
     
     public GameSession() {
         this.updateLastActiveTime();
     }
     
-    public void setPlayer(Player player) {
-        this.player = player;
-        this.player.addSession(this);
+    public synchronized Player getPlayer() {
+        return this.player;
     }
     
-    public void clearPlayer(GameContext context) {
+    public synchronized void setPlayer(Player player) {
+        this.player = player;
+        this.player.setSession(this);
+    }
+    
+    public synchronized void clearPlayer() {
         // Sanity check
         if (this.player == null) {
             return;
@@ -55,15 +59,13 @@ public class GameSession {
         this.player = null;
         
         // Remove session from player
-        player.removeSession(this);
+        player.removeSession();
         
-        // Clean up from player module
-        if (!player.hasSessions()) {
-            context.getPlayerModule().removeFromCache(player);
-        }
+        // Set remove flag
+        this.remove = true;
     }
 
-    public boolean hasPlayer() {
+    public synchronized boolean hasPlayer() {
         return this.player != null;
     }
     

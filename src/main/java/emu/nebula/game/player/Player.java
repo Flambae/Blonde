@@ -1,7 +1,5 @@
 package emu.nebula.game.player;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Stack;
 
 import dev.morphia.annotations.Entity;
@@ -44,7 +42,7 @@ public class Player implements GameDatabaseObject {
     @Indexed private String accountUid;
     
     private transient Account account;
-    private transient Set<GameSession> sessions;
+    private transient GameSession session;
     
     // Details
     private String name;
@@ -80,7 +78,6 @@ public class Player implements GameDatabaseObject {
     
     @Deprecated // Morphia only
     public Player() {
-        this.sessions = new HashSet<>();
         this.characters = new CharacterStorage(this);
         this.gachaManager = new GachaManager(this);
         
@@ -135,22 +132,17 @@ public class Player implements GameDatabaseObject {
         return this.account;
     }
     
-    public void addSession(GameSession session) {
-        synchronized (this.sessions) {
-            this.sessions.add(session);
+    public void setSession(GameSession session) {
+        if (this.session != null) {
+            this.session.clearPlayer();
         }
+        
+        this.session = session;
     }
     
-    public void removeSession(GameSession session) {
-        synchronized (this.sessions) {
-            this.sessions.remove(session);
-        }
-    }
-    
-    public boolean hasSessions() {
-        synchronized (this.sessions) {
-            return !this.sessions.isEmpty();
-        }
+    public void removeSession() {
+        this.session = null;
+        Nebula.getGameContext().getPlayerModule().removeFromCache(this);
     }
     
     public boolean getGender() {
