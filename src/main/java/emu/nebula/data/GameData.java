@@ -43,6 +43,7 @@ public class GameData {
     @Getter private static DataTable<PlayerHeadDef> PlayerHeadDataTable = new DataTable<>();
     @Getter private static DataTable<TitleDef> titleDataTable = new DataTable<>();
     
+    // Shops
     @Getter private static DataTable<MallMonthlyCardDef> MallMonthlyCardDataTable = new DataTable<>();
     @Getter private static DataTable<MallPackageDef> MallPackageDataTable = new DataTable<>();
     @Getter private static DataTable<MallShopDef> MallShopDataTable = new DataTable<>();
@@ -50,6 +51,9 @@ public class GameData {
     
     @Getter private static DataTable<ResidentShopDef> ResidentShopDataTable = new DataTable<>();
     @Getter private static DataTable<ResidentGoodsDef> ResidentGoodsDataTable = new DataTable<>();
+    
+    // Commissions
+    @Getter private static DataTable<AgentDef> AgentDataTable = new DataTable<>();
     
     // Dictionary
     @Getter private static DataTable<DictionaryTabDef> DictionaryTabDataTable = new DataTable<>();

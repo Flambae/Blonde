@@ -3,6 +3,7 @@ package emu.nebula.game.instance;
 import java.util.List;
 
 import emu.nebula.game.inventory.ItemParamMap;
+import emu.nebula.game.inventory.ItemRewardParam;
 import emu.nebula.game.player.Player;
 
 public interface InstanceData {
@@ -15,9 +16,9 @@ public interface InstanceData {
     
     // Handle reward generation
     
-    public List<InstanceRewardParam> getFirstRewards();
+    public List<ItemRewardParam> getFirstRewards();
     
-    public default List<InstanceRewardParam> getFirstRewards(int rewardType) {
+    public default List<ItemRewardParam> getFirstRewards(int rewardType) {
         return getFirstRewards();
     }
     
@@ -25,9 +26,9 @@ public interface InstanceData {
         return this.generateRewards(this.getFirstRewards());
     }
     
-    public List<InstanceRewardParam> getRewards();
+    public List<ItemRewardParam> getRewards();
     
-    public default List<InstanceRewardParam> getRewards(int rewardType) {
+    public default List<ItemRewardParam> getRewards(int rewardType) {
         return getRewards();
     }
     
@@ -35,7 +36,7 @@ public interface InstanceData {
         return this.generateRewards(this.getRewards());
     }
     
-    public default ItemParamMap generateRewards(List<InstanceRewardParam> params) {
+    public default ItemParamMap generateRewards(List<ItemRewardParam> params) {
         var map = new ItemParamMap();
         
         for (var param : params) {

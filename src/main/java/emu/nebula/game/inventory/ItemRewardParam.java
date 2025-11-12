@@ -1,15 +1,15 @@
-package emu.nebula.game.instance;
+package emu.nebula.game.inventory;
 
 import emu.nebula.util.Utils;
 import lombok.Getter;
 
 @Getter
-public class InstanceRewardParam {
+public class ItemRewardParam {
     public int id;
     public int min;
     public int max;
     
-    public InstanceRewardParam(int id, int min, int max) {
+    public ItemRewardParam(int id, int min, int max) {
         this.id = id;
         this.min = min;
         this.max = max;

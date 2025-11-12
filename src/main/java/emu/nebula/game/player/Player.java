@@ -11,6 +11,7 @@ import emu.nebula.Nebula;
 import emu.nebula.data.GameData;
 import emu.nebula.database.GameDatabaseObject;
 import emu.nebula.game.account.Account;
+import emu.nebula.game.agent.AgentManager;
 import emu.nebula.game.character.CharacterStorage;
 import emu.nebula.game.formation.FormationManager;
 import emu.nebula.game.gacha.GachaManager;
@@ -87,6 +88,7 @@ public class Player implements GameDatabaseObject {
     private transient PlayerProgress progress;
     private transient StoryManager storyManager;
     private transient QuestManager questManager;
+    private transient AgentManager agentManager;
     
     // Next packages
     private transient Stack<NetMsgPacket> nextPackages;
@@ -532,6 +534,7 @@ public class Player implements GameDatabaseObject {
         this.progress = this.loadManagerFromDatabase(PlayerProgress.class);
         this.storyManager = this.loadManagerFromDatabase(StoryManager.class);
         this.questManager = this.loadManagerFromDatabase(QuestManager.class);
+        this.agentManager = this.loadManagerFromDatabase(AgentManager.class);
         
         // Database fixes
         if (this.showChars == null) {
@@ -714,9 +717,14 @@ public class Player implements GameDatabaseObject {
         var phone = proto.getMutablePhone();
         phone.setNewMessage(this.getCharacters().getNewPhoneMessageCount());
         
-        // Extra
-        proto.getMutableAgent();
+        // Agent
+        var agentProto = proto.getMutableAgent();
         
+        for (var agent : getAgentManager().getAgents().values()) {
+            agentProto.addInfos(agent.toProto());
+        }
+        
+        // Complete
         return proto;
     }
     

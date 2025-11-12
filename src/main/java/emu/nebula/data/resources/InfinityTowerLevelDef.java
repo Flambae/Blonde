@@ -5,8 +5,8 @@ import java.util.List;
 
 import emu.nebula.data.BaseDef;
 import emu.nebula.data.ResourceType;
-import emu.nebula.game.instance.InstanceRewardParam;
 import emu.nebula.game.inventory.ItemParamMap;
+import emu.nebula.game.inventory.ItemRewardParam;
 import emu.nebula.util.JsonUtils;
 
 import lombok.Getter;
@@ -18,7 +18,7 @@ public class InfinityTowerLevelDef extends BaseDef {
     private int DifficultyId;
     private String BaseAwardPreview;
     
-    private transient List<InstanceRewardParam> rewards;
+    private transient List<ItemRewardParam> rewards;
     
     @Override
     public int getId() {
@@ -61,7 +61,7 @@ public class InfinityTowerLevelDef extends BaseDef {
                 max = 1;
             }
             
-            var reward = new InstanceRewardParam(itemId, min, max);
+            var reward = new ItemRewardParam(itemId, min, max);
             
             if (isFirst) {
                 

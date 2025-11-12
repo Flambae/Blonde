@@ -6,7 +6,7 @@ import java.util.List;
 import emu.nebula.data.BaseDef;
 import emu.nebula.data.ResourceType;
 import emu.nebula.game.instance.InstanceData;
-import emu.nebula.game.instance.InstanceRewardParam;
+import emu.nebula.game.inventory.ItemRewardParam;
 import emu.nebula.util.JsonUtils;
 
 import lombok.Getter;
@@ -19,8 +19,8 @@ public class WeekBossLevelDef extends BaseDef implements InstanceData {
     private int NeedWorldClass;
     private String BaseAwardPreview;
     
-    private transient List<InstanceRewardParam> firstRewards;
-    private transient List<InstanceRewardParam> rewards;
+    private transient List<ItemRewardParam> firstRewards;
+    private transient List<ItemRewardParam> rewards;
     
     @Override
     public int getId() {
@@ -54,7 +54,7 @@ public class WeekBossLevelDef extends BaseDef implements InstanceData {
                 max = 1;
             }
             
-            var reward = new InstanceRewardParam(itemId, min, max);
+            var reward = new ItemRewardParam(itemId, min, max);
             
             if (isFirst) {
                 this.firstRewards.add(reward);
