@@ -677,11 +677,9 @@ public class Inventory extends PlayerManager implements GameDatabaseObject {
         if (change == null) {
             change = new PlayerChangeInfo();
         }
-        
+
         // Sanity check
-        if (count <= 0) {
-            return change;
-        }
+        count = Math.max(count, 1);
         
         // Get item data
         var data = GameData.getItemDataTable().get(id);
