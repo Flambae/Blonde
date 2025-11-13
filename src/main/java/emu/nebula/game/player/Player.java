@@ -689,8 +689,9 @@ public class Player implements GameDatabaseObject {
         }
         
         // Formations
+        var formations = proto.getMutableFormation();
         for (var f : this.getFormations().getFormations().values()) {
-            proto.getMutableFormation().addInfo(f.toProto());
+            formations.addInfo(f.toProto());
         }
         
         // Set player states
