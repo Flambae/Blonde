@@ -18,7 +18,7 @@ public class HandlerVampireTalentDetailReq extends NetHandler {
         // Build response
         var rsp = VampireTalentDetailResp.newInstance()
                 .setNodes(manager.getTalents().toByteArray())
-                .setActiveCount(manager.getProgress().getVampireCards().size());
+                .setActiveCount(manager.getProgress().getFateCards().size());
         
         // Encode and send
         return session.encodeMsg(NetMsgId.vampire_talent_detail_succeed_ack, rsp);

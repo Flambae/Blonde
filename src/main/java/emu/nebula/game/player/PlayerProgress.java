@@ -42,10 +42,12 @@ public class PlayerProgress extends PlayerManager implements GameDatabaseObject 
     // Infinite Arena
     private Int2IntMap infinityArenaLog;
     
-    // Vampire Survivors TODO
+    // Vampire Survivors
     private Map<Integer, VampireSurvivorLog> vampireLog;
     private Bitset vampireTalents;
-    private IntSet vampireCards;
+    
+    // Fate cards
+    private IntSet fateCards;
 
     @Deprecated // Morphia only
     public PlayerProgress() {
@@ -72,7 +74,7 @@ public class PlayerProgress extends PlayerManager implements GameDatabaseObject 
         // Vampire Survivor
         this.vampireLog = new HashMap<>();
         this.vampireTalents = new Bitset();
-        this.vampireCards = new IntOpenHashSet();
+        this.fateCards = new IntOpenHashSet();
         
         // Save to database
         this.save();

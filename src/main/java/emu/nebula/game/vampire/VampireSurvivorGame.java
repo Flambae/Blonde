@@ -50,7 +50,7 @@ public class VampireSurvivorGame {
     }
 
     public boolean isNewCard(int id) {
-        return !this.getManager().getProgress().getVampireCards().contains(id);
+        return !this.getManager().getProgress().getFateCards().contains(id);
     }
 
     private void cacheRandomCards() {

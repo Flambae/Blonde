@@ -32,7 +32,7 @@ public class VampireSurvivorManager extends PlayerManager {
     }
     
     public int getTalentPoints() {
-        return this.getProgress().getVampireCards().size() * 5;
+        return this.getProgress().getFateCards().size() * 5;
     }
     
     public VampireSurvivorGame apply(int levelId, RepeatedLong builds) {
@@ -112,11 +112,11 @@ public class VampireSurvivorManager extends PlayerManager {
         List<Integer> newCards = new ArrayList<>();
         
         for (int card : game.getCards()) {
-            if (this.getProgress().getVampireCards().contains(card)) {
+            if (this.getProgress().getFateCards().contains(card)) {
                 continue;
             }
             
-            this.getProgress().getVampireCards().add(card);
+            this.getProgress().getFateCards().add(card);
             newCards.add(card);
         }
         
@@ -125,14 +125,14 @@ public class VampireSurvivorManager extends PlayerManager {
         }
         
         // Save to database
-        Nebula.getGameDatabase().addToSet(this.getProgress(), this.getPlayerUid(), "vampireCards", newCards);
+        Nebula.getGameDatabase().addToSet(this.getProgress(), this.getPlayerUid(), "fateCards", newCards);
         
         // Notify player
         this.getPlayer().addNextPackage(
             NetMsgId.vampire_survivor_talent_node_notify,
             VampireTalentDetailResp.newInstance()
                 .setNodes(this.getTalents().toByteArray())
-                .setActiveCount(this.getProgress().getVampireCards().size())
+                .setActiveCount(this.getProgress().getFateCards().size())
                 .setObtainCount(newCards.size())
         );
     }
