@@ -30,6 +30,7 @@ public class GameData {
     
     @Getter private static DataTable<AffinityLevelDef> AffinityLevelDataTable = new DataTable<>();
     @Getter private static DataTable<AffinityGiftDef> AffinityGiftDataTable = new DataTable<>();
+    @Getter private static DataTable<PlotDef> PlotDataTable = new DataTable<>();
     
     @Getter private static DataTable<CharGemDef> CharGemDataTable = new DataTable<>();
     @Getter private static DataTable<CharGemSlotControlDef> CharGemSlotControlDataTable = new DataTable<>();
