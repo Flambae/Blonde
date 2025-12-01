@@ -85,7 +85,7 @@ public class AchievementManager extends PlayerManager implements GameDatabaseObj
         // Parse events
         for (var event : events.getList()) {
             // Check id
-            if (event.getId() != 200) {
+            if (event.getId() != AchievementCondition.ClientReport.getValue()) {
                 continue;
             }
             
@@ -157,7 +157,7 @@ public class AchievementManager extends PlayerManager implements GameDatabaseObj
         }
         
         // Check what type of achievement condition this is
-        boolean isTotal = AchievementHelper.isTotalAchievement(condition);
+        boolean isTotal = AchievementHelper.isIncrementalAchievement(condition);
         boolean hasCompleted = false;
         
         // Parse achievements

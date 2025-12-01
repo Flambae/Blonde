@@ -18,6 +18,7 @@ import emu.nebula.data.GameData;
 import emu.nebula.data.resources.CharacterDef;
 import emu.nebula.data.resources.TalentGroupDef;
 import emu.nebula.database.GameDatabaseObject;
+import emu.nebula.game.achievement.AchievementCondition;
 import emu.nebula.game.inventory.ItemParamMap;
 import emu.nebula.game.player.Player;
 import emu.nebula.game.player.PlayerChangeInfo;
@@ -115,6 +116,10 @@ public class GameCharacter implements GameDatabaseObject {
         } else {
             this.contact.setCharacter(this);
         }
+    }
+    
+    public boolean isMaster() {
+        return this.getData().getGrade() == 1;
     }
     
     public void setLevel(int level) {
@@ -271,6 +276,9 @@ public class GameCharacter implements GameDatabaseObject {
         
         // Save to database
         this.save();
+        
+        // Trigger quest/achievement
+        this.getPlayer().trigger(AchievementCondition.CharacterAdvanceTotal, 1);
         
         // Success
         return changes.setSuccess(true);
