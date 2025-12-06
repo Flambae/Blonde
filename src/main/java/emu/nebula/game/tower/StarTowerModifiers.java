@@ -29,10 +29,13 @@ public class StarTowerModifiers {
     private boolean shopDiscountTier2;
     private boolean shopDiscountTier3;
     
-    // Bonus potential levels
+    // Bonus potential level proc
     private double bonusStrengthenChance = 0;
     private double bonusPotentialChance = 0;
     private int bonusPotentialLevel = 0;
+    
+    private int potentialRerollCount;
+    private int potentialRerollDiscount;
     
     public StarTowerModifiers(StarTowerGame game) {
         this.game = game;
@@ -43,11 +46,11 @@ public class StarTowerModifiers {
         
         this.freeStrengthen = this.hasGrowthNode(10801);
         
+        // Strengthen discount (Set Meal Agreement)
         if (this.hasGrowthNode(30402)) {
-            this.strengthenDiscount += 60;
-        }
-        if (this.hasGrowthNode(30102)) {
-            this.strengthenDiscount += 30;
+            this.strengthenDiscount = 60;
+        } else if (this.hasGrowthNode(30102)) {
+            this.strengthenDiscount = 30;
         }
         
         // Bonus potential max level (Ocean of Souls)
@@ -57,7 +60,7 @@ public class StarTowerModifiers {
             this.bonusMaxPotentialLevel = 4;
         }
         
-        // Shop (Monolith Premium)
+        // Shop extra goods (Monolith Premium)
         if (this.hasGrowthNode(20702)) {
             this.shopGoodsCount = 8;
         } else if (this.hasGrowthNode(20402)) {
@@ -84,7 +87,7 @@ public class StarTowerModifiers {
         this.shopDiscountTier2 = game.getDifficulty() >= 4 && this.hasGrowthNode(20502);
         this.shopDiscountTier3 = game.getDifficulty() >= 5 && this.hasGrowthNode(20802);
         
-        // Bonus potential levels (Potential Boost)
+        // Bonus potential enhancement level procs (Potential Boost)
         if (game.getDifficulty() >= 7 && this.hasGrowthNode(30802)) {
             this.bonusStrengthenChance = 0.3;
         } else if (game.getDifficulty() >= 6 && this.hasGrowthNode(30502)) {
@@ -106,6 +109,20 @@ public class StarTowerModifiers {
         } else if (game.getDifficulty() >= 5 && this.hasGrowthNode(20801)) {
             this.bonusPotentialChance = 0.05;
             this.bonusMaxPotentialLevel = 1;
+        }
+        
+        // Potential reroll (Cloud Dice)
+        if (this.hasGrowthNode(20901)) {
+            this.potentialRerollCount += 1;
+        }
+        
+        // Potential reroll price discount (Destiny of Stars)
+        if (this.hasGrowthNode(30702)) {
+            this.potentialRerollDiscount = 60;
+        } else if (this.hasGrowthNode(30401)) {
+            this.potentialRerollDiscount = 40;
+        } else if (this.hasGrowthNode(30101)) {
+            this.potentialRerollDiscount = 30;
         }
     }
     
