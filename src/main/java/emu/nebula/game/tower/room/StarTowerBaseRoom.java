@@ -43,7 +43,7 @@ public class StarTowerBaseRoom {
         this.cases = new Int2ObjectLinkedOpenHashMap<>();
     }
     
-    public int getType() {
+    public RoomType getType() {
         return stage.getRoomType();
     }
     
@@ -142,7 +142,7 @@ public class StarTowerBaseRoom {
         var proto = StarTowerRoomData.newInstance()
                 .setFloor(this.getGame().getFloorCount())
                 .setMapId(this.getMapId())
-                .setRoomType(this.getType())
+                .setRoomType(this.getType().getValue())
                 .setMapTableId(this.getMapTableId());
         
         if (this.getMapParam() != null && !this.getMapParam().isEmpty()) {

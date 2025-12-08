@@ -178,7 +178,7 @@ public class Utils {
     }
     
     public static boolean randomChance(double chance) {
-        if (chance <= 0) {
+        if (chance <= 0D) {
             return false;
         }
         
