@@ -769,32 +769,7 @@ public class StarTowerGame {
             }
             
             // Refresh secondary skills
-            var newSecondarySkills = SecondarySkillDef.calculateSecondarySkills(this.getDiscIds(), this.getItems());
-            
-            // Add any new secondary skills to the data proto
-            for (int id : newSecondarySkills) {
-                if (!this.getSecondarySkills().contains(id)) {
-                    var info = ActiveSecondaryChange.newInstance()
-                            .setSecondaryId(id)
-                            .setActive(true);
-                    
-                    data.addSecondaries(info);
-                }
-            }
-            
-            // Inform the client that these skills are no longer active
-            for (int id : this.getSecondarySkills()) {
-                if (!newSecondarySkills.contains(id)) {
-                    var info = ActiveSecondaryChange.newInstance()
-                            .setSecondaryId(id)
-                            .setActive(false);
-                    
-                    data.addSecondaries(info);
-                }
-            }
-            
-            // Set new secondary skills
-            this.secondarySkills = newSecondarySkills;
+            this.refreshSecondarySkills(data);
             
             // Clear new infos
             this.getNewInfos().clear();
@@ -824,6 +799,50 @@ public class StarTowerGame {
         
         // Complete
         return rsp;
+    }
+    
+    // Etc
+    
+    private void refreshSecondarySkills(TowerChangeData data) {
+        // Init
+        var newSecondarySkills = SecondarySkillDef.calculateSecondarySkills(this.getDiscIds(), this.getItems());
+        int newSecondaryCount = 0;
+        
+        // Add any new secondary skills to the data proto
+        for (int id : newSecondarySkills) {
+            if (!this.getSecondarySkills().contains(id)) {
+                var info = ActiveSecondaryChange.newInstance()
+                        .setSecondaryId(id)
+                        .setActive(true);
+                
+                data.addSecondaries(info);
+                
+                // Counter
+                newSecondaryCount++;
+            }
+        }
+        
+        // Inform the client that these skills are no longer active
+        for (int id : this.getSecondarySkills()) {
+            if (!newSecondarySkills.contains(id)) {
+                var info = ActiveSecondaryChange.newInstance()
+                        .setSecondaryId(id)
+                        .setActive(false);
+                
+                data.addSecondaries(info);
+            }
+        }
+        
+        // Set new secondary skills
+        this.secondarySkills = newSecondarySkills;
+        
+        // Achievement trigger
+        if (newSecondaryCount > 0) {
+            this.getAchievementManager().trigger(
+                AchievementCondition.TowerSpecificSecondarySkillActivateTotal,
+                newSecondaryCount
+            );
+        }
     }
     
     // Proto
