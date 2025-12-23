@@ -146,7 +146,7 @@ public class Player implements GameDatabaseObject {
         
         // Set basic info
         this.accountUid = account.getUid();
-        this.createTime = Nebula.getCurrentTime();
+        this.createTime = Nebula.getCurrentServerTime();
         
         this.name = name;
         this.signature = "";
@@ -532,7 +532,7 @@ public class Player implements GameDatabaseObject {
     
     public int getEnergy() {
         // Cache time
-        long time = Nebula.getCurrentTime();
+        long time = Nebula.getCurrentServerTime();
         
         // Calculate time diff
         double diff = time - this.energyLastUpdate;
@@ -819,7 +819,7 @@ public class Player implements GameDatabaseObject {
 
     public PlayerInfo toProto() {
         PlayerInfo proto = PlayerInfo.newInstance()
-                .setServerTs(Nebula.getCurrentTime())
+                .setServerTs(Nebula.getCurrentServerTime())
                 .setSigninIndex(this.getSignInIndex())
                 .setTowerTicket(this.getProgress().getTowerTickets())
                 .setDailyShopRewardStatus(this.getQuestManager().hasDailyReward())
@@ -1023,7 +1023,7 @@ public class Player implements GameDatabaseObject {
     }
     
     public Energy getEnergyProto() {
-        long nextDuration = Math.max(GameConstants.ENERGY_REGEN_TIME - (Nebula.getCurrentTime() - getEnergyLastUpdate()), 1);
+        long nextDuration = Math.max(GameConstants.ENERGY_REGEN_TIME - (Nebula.getCurrentServerTime() - getEnergyLastUpdate()), 1);
         
         var proto = Energy.newInstance()
                 .setUpdateTime(this.getEnergyLastUpdate())
