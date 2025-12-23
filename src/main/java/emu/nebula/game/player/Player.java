@@ -907,7 +907,8 @@ public class Player implements GameDatabaseObject {
         state.getMutableAchievement()
             .setNew(this.getAchievementManager().hasNewAchievements());
         
-        state.getMutableFriendEnergy();
+        state.getMutableFriendEnergy()
+            .setState(this.getFriendList().hasEnergy());
         state.getMutableMallPackage();
         state.getMutableTravelerDuelQuest()
             .setType(QuestType.TravelerDuel);
