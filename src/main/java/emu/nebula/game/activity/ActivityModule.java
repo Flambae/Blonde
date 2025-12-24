@@ -34,6 +34,9 @@ public class ActivityModule extends GameContextModule {
         this.activities.add(2010101);
         this.activities.add(2010103);
         this.activities.add(2010104);
+        
+        // Trekker versus
+        this.activities.add(600001);
     }
     
 }
