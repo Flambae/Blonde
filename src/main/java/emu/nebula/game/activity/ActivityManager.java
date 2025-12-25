@@ -68,6 +68,14 @@ public class ActivityManager extends PlayerManager implements GameDatabaseObject
             if (data == null) {
                 it.remove();
                 this.queueSave = true;
+                continue;
+            }
+            
+            // Remove activities that are not in the activity module
+            if (!Nebula.getGameContext().getActivityModule().getActivities().contains(activity.getId())) {
+                it.remove();
+                this.queueSave = true;
+                continue;
             }
             
             // Set data
